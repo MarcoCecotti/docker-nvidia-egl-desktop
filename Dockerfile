@@ -1,6 +1,4 @@
-FROM nvidia/opengl:1.2-glvnd-runtime-ubuntu20.04
-# Comment the line above and uncomment the line below for Ubuntu 18.04
-#FROM nvidia/opengl:1.2-glvnd-runtime-ubuntu18.04
+FROM docker pull nvidia/vulkan:1.1.121-cuda-10.1-beta.1-ubuntu18.04
 
 LABEL maintainer "https://github.com/ehfd"
 
@@ -58,19 +56,19 @@ RUN apt-get update && apt-get install -y \
     rm -rf /var/lib/apt/lists/*
 
 # Install Vulkan (for offscreen rendering only)
-RUN apt-get update && apt-get install -y --no-install-recommends \
-        libvulkan1 \
-        vulkan-utils && \
-    rm -rf /var/lib/apt/lists/* && \
-    VULKAN_API_VERSION=`dpkg -s libvulkan1 | grep -oP 'Version: [0-9|\.]+' | grep -oP '[0-9]+(\.[0-9]+)(\.[0-9]+)'` && \
-    mkdir -p /etc/vulkan/icd.d/ && \
-    echo "{\n\
-    \"file_format_version\" : \"1.0.0\",\n\
-    \"ICD\": {\n\
-        \"library_path\": \"libGLX_nvidia.so.0\",\n\
-        \"api_version\" : \"${VULKAN_API_VERSION}\"\n\
-    }\n\
-}" > /etc/vulkan/icd.d/nvidia_icd.json
+#RUN apt-get update && apt-get install -y --no-install-recommends \
+#        libvulkan1 \
+#        vulkan-utils && \
+#    rm -rf /var/lib/apt/lists/* && \
+#    VULKAN_API_VERSION=`dpkg -s libvulkan1 | grep -oP 'Version: [0-9|\.]+' | grep -oP '[0-9]+(\.[0-9]+)(\.[0-9]+)'` && \
+#    mkdir -p /etc/vulkan/icd.d/ && \
+#    echo "{\n\
+#    \"file_format_version\" : \"1.0.0\",\n\
+#    \"ICD\": {\n\
+#        \"library_path\": \"libGLX_nvidia.so.0\",\n\
+#        \"api_version\" : \"${VULKAN_API_VERSION}\"\n\
+#    }\n\
+#}" > /etc/vulkan/icd.d/nvidia_icd.json
 
 # Wine and Winetricks, comment out the below lines to disable
 ARG WINE_BRANCH=stable
