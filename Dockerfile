@@ -1,10 +1,9 @@
 # Ubuntu release versions 18.04 and 20.04 are supported
-ARG UBUNTU_RELEASE=20.04
-FROM nvcr.io/nvidia/cudagl:11.0.3-runtime-ubuntu${UBUNTU_RELEASE}
+ARG UBUNTU_RELEASE=18.04
+FROM nvidia/vulkan:1.1.121-cuda-10.1-beta.1-ubuntu${UBUNTU_RELEASE}
 
 LABEL maintainer "https://github.com/ehfd,https://github.com/danisla"
 
-ARG UBUNTU_RELEASE
 # Make all NVIDIA GPUs visible, but we want to manually install drivers
 ARG NVIDIA_VISIBLE_DEVICES=all
 # Supress interactive menu while installing keyboard-configuration
@@ -76,17 +75,17 @@ RUN dpkg --add-architecture i386 && \
     rm -rf /var/lib/apt/lists/*
 
 # Install Vulkan (for offscreen rendering only)
-RUN if [ "${UBUNTU_RELEASE}" = "18.04" ]; then apt-get update && apt-get install --no-install-recommends -y libvulkan1 vulkan-utils; else apt-get update && apt-get install --no-install-recommends -y libvulkan1 vulkan-tools; fi && \
-    rm -rf /var/lib/apt/lists/* && \
-    VULKAN_API_VERSION=$(dpkg -s libvulkan1 | grep -oP 'Version: [0-9|\.]+' | grep -oP '[0-9]+(\.[0-9]+)(\.[0-9]+)') && \
-    mkdir -p /etc/vulkan/icd.d/ && \
-    echo "{\n\
-    \"file_format_version\" : \"1.0.0\",\n\
-    \"ICD\": {\n\
-        \"library_path\": \"libGLX_nvidia.so.0\",\n\
-        \"api_version\" : \"${VULKAN_API_VERSION}\"\n\
-    }\n\
-}" > /etc/vulkan/icd.d/nvidia_icd.json
+#RUN if [ "${UBUNTU_RELEASE}" = "18.04" ]; then apt-get update && apt-get install --no-install-recommends -y libvulkan1 vulkan-utils; else apt-get update && apt-get install --no-install-recommends -y libvulkan1 vulkan-tools; fi && \
+#    rm -rf /var/lib/apt/lists/* && \
+#    VULKAN_API_VERSION=$(dpkg -s libvulkan1 | grep -oP 'Version: [0-9|\.]+' | grep -oP '[0-9]+(\.[0-9]+)(\.[0-9]+)') && \
+#    mkdir -p /etc/vulkan/icd.d/ && \
+#    echo "{\n\
+#    \"file_format_version\" : \"1.0.0\",\n\
+#    \"ICD\": {\n\
+#        \"library_path\": \"libGLX_nvidia.so.0\",\n\
+#        \"api_version\" : \"${VULKAN_API_VERSION}\"\n\
+#    }\n\
+#}" > /etc/vulkan/icd.d/nvidia_icd.json
 
 # Wine, Winetricks, and PlayOnLinux, comment out the below lines to disable
 ARG WINE_BRANCH=devel
